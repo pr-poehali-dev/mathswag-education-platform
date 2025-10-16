@@ -268,9 +268,7 @@ const Index = () => {
             {pricingPlans.map((plan, index) => (
               <Card 
                 key={index}
-                className={`relative hover:shadow-2xl transition-all ${
-                  plan.popular ? 'border-4 border-[#FF6DC4] scale-105' : 'border-2 border-gray-200'
-                }`}
+                className="relative hover:shadow-2xl transition-all border-2 border-gray-200"
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#FF6DC4] to-[#FFA07A] text-white px-6 py-1 rounded-full text-sm font-semibold">
