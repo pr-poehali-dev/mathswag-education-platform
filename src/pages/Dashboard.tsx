@@ -1,12 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
   const [lessons] = useState([
     { id: 1, title: 'Алгебра: Квадратные уравнения', date: '2025-10-18', time: '14:00', type: 'individual' },
     { id: 2, title: 'Геометрия: Теорема Пифагора', date: '2025-10-20', time: '16:00', type: 'group' },
@@ -48,16 +56,22 @@ const Dashboard = () => {
             </div>
             <h1 className="text-2xl font-bold text-gray-800">MathSwag</h1>
           </div>
-          <Button variant="ghost" onClick={() => navigate('/')}>
-            <Icon name="Home" size={20} />
-            <span className="ml-2">Главная</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={() => navigate('/')}>
+              <Icon name="Home" size={20} />
+              <span className="ml-2">Главная</span>
+            </Button>
+            <Button variant="outline" onClick={logout}>
+              <Icon name="LogOut" size={20} />
+              <span className="ml-2">Выйти</span>
+            </Button>
+          </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Привет! 👋</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">Привет, {user?.name}! 👋</h2>
           <p className="text-gray-600">Добро пожаловать в твой личный кабинет</p>
         </div>
 

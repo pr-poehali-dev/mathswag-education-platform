@@ -5,12 +5,32 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 const Index = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [activeSection, setActiveSection] = useState('home');
   const [selectedTeacher, setSelectedTeacher] = useState<any>(null);
   const [isTeacherDialogOpen, setIsTeacherDialogOpen] = useState(false);
+
+  const handleBuyLesson = () => {
+    if (!isAuthenticated) {
+      toast.error('Войдите в систему, чтобы купить уроки');
+      navigate('/login');
+    } else {
+      toast.success('Перенаправление на страницу оплаты...');
+    }
+  };
+
+  const handleGoToDashboard = () => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
@@ -153,9 +173,9 @@ const Index = () => {
               </button>
             </div>
 
-            <Button onClick={() => navigate('/dashboard')} className="bg-gradient-to-r from-[#45B7D1] to-[#4EDDC4] hover:opacity-90 text-white">
+            <Button onClick={handleGoToDashboard} className="bg-gradient-to-r from-[#45B7D1] to-[#4EDDC4] hover:opacity-90 text-white">
               <Icon name="User" size={16} />
-              <span className="ml-2">Личный кабинет</span>
+              <span className="ml-2">{isAuthenticated ? `${user?.name}` : 'Войти'}</span>
             </Button>
           </div>
         </div>
@@ -275,6 +295,7 @@ const Index = () => {
                     ))}
                   </ul>
                   <Button 
+                    onClick={handleBuyLesson}
                     className={`w-full ${
                       plan.popular 
                         ? 'bg-gradient-to-r from-[#FF6DC4] to-[#FFA07A] hover:opacity-90' 
@@ -282,7 +303,7 @@ const Index = () => {
                     } text-white`}
                     size="lg"
                   >
-                    Купить уроки
+                    {isAuthenticated ? 'Купить уроки' : 'Войти для покупки'}
                   </Button>
                 </CardContent>
               </Card>
