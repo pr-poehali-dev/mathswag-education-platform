@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('home');
+  const [selectedTeacher, setSelectedTeacher] = useState<any>(null);
+  const [isTeacherDialogOpen, setIsTeacherDialogOpen] = useState(false);
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
@@ -19,7 +22,7 @@ const Index = () => {
 
   const pricingPlans = [
     {
-      name: 'Минимальный',
+      name: 'Индивидуальные',
       price: '400₽',
       duration: 'урок',
       lessons: '2500₽ за 10 уроков',
@@ -33,10 +36,10 @@ const Index = () => {
       popular: false,
     },
     {
-      name: 'Стомклом',
+      name: 'Групповые',
       price: '410₽',
       duration: 'урок',
-      lessons: 'Групповые занятия',
+      lessons: 'Группа до 6 человек',
       features: [
         'Группа до 6 человек',
         'Совместное решение задач',
@@ -63,10 +66,39 @@ const Index = () => {
   ];
 
   const teachers = [
-    { name: 'Анна Петровна', subject: 'Алгебра и анализ', experience: '12 лет', rating: 4.9 },
-    { name: 'Михаил Сергеевич', subject: 'Геометрия', experience: '8 лет', rating: 4.8 },
-    { name: 'Елена Ивановна', subject: 'Высшая математика', experience: '15 лет', rating: 5.0 },
+    { 
+      name: 'Анна Петровна', 
+      subject: 'Алгебра и анализ', 
+      experience: '12 лет', 
+      rating: 4.9,
+      description: 'Кандидат педагогических наук, специалист по алгебре и математическому анализу. Работает с учениками 7-11 классов и студентами первых курсов. Более 500 учеников успешно сдали ЕГЭ на 90+ баллов.',
+      education: 'МГУ им. М.В. Ломоносова, механико-математический факультет',
+      achievements: ['Лучший преподаватель 2023', 'Автор методических пособий', 'Эксперт ЕГЭ']
+    },
+    { 
+      name: 'Михаил Сергеевич', 
+      subject: 'Геометрия', 
+      experience: '8 лет', 
+      rating: 4.8,
+      description: 'Преподаватель геометрии с акцентом на наглядные методы обучения. Специализируется на подготовке к олимпиадам и углубленном изучении стереометрии. Помогает ученикам "видеть" геометрию в пространстве.',
+      education: 'МФТИ, факультет прикладной математики',
+      achievements: ['Призер всероссийской олимпиады', '200+ учеников поступили в топ-вузы', 'Разработчик курса по геометрии']
+    },
+    { 
+      name: 'Елена Ивановна', 
+      subject: 'Высшая математика', 
+      experience: '15 лет', 
+      rating: 5.0,
+      description: 'Доцент кафедры высшей математики, специалист по математическому анализу и дифференциальным уравнениям. Готовит студентов технических вузов, помогает с курсовыми и сессиями. Объясняет сложные концепции простым языком.',
+      education: 'МГТУ им. Баумана, кафедра высшей математики',
+      achievements: ['15 лет преподавания в вузе', 'Автор 20+ научных статей', '100% студентов сдают сессию с первого раза']
+    },
   ];
+
+  const openTeacherDialog = (teacher: any) => {
+    setSelectedTeacher(teacher);
+    setIsTeacherDialogOpen(true);
+  };
 
   const faqs = [
     {
@@ -268,7 +300,11 @@ const Index = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {teachers.map((teacher, index) => (
-              <Card key={index} className="border-2 border-gray-200 hover:shadow-xl transition-shadow">
+              <Card 
+                key={index} 
+                className="border-2 border-gray-200 hover:shadow-xl transition-shadow cursor-pointer"
+                onClick={() => openTeacherDialog(teacher)}
+              >
                 <CardHeader className="text-center">
                   <div className="w-24 h-24 bg-gradient-to-br from-[#45B7D1] to-[#4EDDC4] rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold">
                     {teacher.name[0]}
@@ -287,6 +323,15 @@ const Index = () => {
                       <span className="font-semibold">{teacher.rating}</span>
                     </div>
                   </div>
+                  <Button 
+                    className="mt-4 bg-gradient-to-r from-[#45B7D1] to-[#4EDDC4] hover:opacity-90 text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openTeacherDialog(teacher);
+                    }}
+                  >
+                    Подробнее
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -369,6 +414,79 @@ const Index = () => {
           <p className="text-gray-400">© 2025 MathSwag. Все права защищены.</p>
         </div>
       </footer>
+
+      <Dialog open={isTeacherDialogOpen} onOpenChange={setIsTeacherDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          {selectedTeacher && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#45B7D1] to-[#4EDDC4] rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                    {selectedTeacher.name[0]}
+                  </div>
+                  <div className="text-left">
+                    <DialogTitle className="text-2xl">{selectedTeacher.name}</DialogTitle>
+                    <DialogDescription className="text-lg">{selectedTeacher.subject}</DialogDescription>
+                  </div>
+                </div>
+              </DialogHeader>
+
+              <div className="space-y-6">
+                <div className="flex gap-6">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Icon name="Briefcase" size={20} />
+                    <span className="font-medium">Опыт: {selectedTeacher.experience}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-yellow-500">
+                    <Icon name="Star" size={20} fill="currentColor" />
+                    <span className="font-semibold text-lg">{selectedTeacher.rating}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                    <Icon name="User" size={18} />
+                    О преподавателе
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">{selectedTeacher.description}</p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                    <Icon name="GraduationCap" size={18} />
+                    Образование
+                  </h3>
+                  <p className="text-gray-700">{selectedTeacher.education}</p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <Icon name="Award" size={18} />
+                    Достижения
+                  </h3>
+                  <ul className="space-y-2">
+                    {selectedTeacher.achievements.map((achievement: string, index: number) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <Icon name="CheckCircle" size={18} className="text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">{achievement}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="pt-4 border-t">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-[#45B7D1] to-[#4EDDC4] hover:opacity-90 text-white"
+                    size="lg"
+                  >
+                    Записаться на урок
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
