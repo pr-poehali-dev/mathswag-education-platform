@@ -9,8 +9,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
 
@@ -26,12 +26,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
+  const register = async (name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     const users = JSON.parse(localStorage.getItem('mathswag_users') || '[]');
     
     const existingUser = users.find((u: any) => u.email === email);
     if (existingUser) {
-      return false;
+      return { success: false, error: 'email_exists' };
     }
 
     const newUser = {
@@ -48,22 +48,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(userWithoutPassword);
     localStorage.setItem('mathswag_user', JSON.stringify(userWithoutPassword));
 
-    return true;
+    return { success: true };
   };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     const users = JSON.parse(localStorage.getItem('mathswag_users') || '[]');
     
-    const user = users.find((u: any) => u.email === email && u.password === password);
-    if (!user) {
-      return false;
+    const userByEmail = users.find((u: any) => u.email === email);
+    
+    if (!userByEmail) {
+      return { success: false, error: 'account_not_found' };
+    }
+    
+    if (userByEmail.password !== password) {
+      return { success: false, error: 'wrong_password' };
     }
 
-    const userWithoutPassword = { id: user.id, name: user.name, email: user.email };
+    const userWithoutPassword = { id: userByEmail.id, name: userByEmail.name, email: userByEmail.email };
     setUser(userWithoutPassword);
     localStorage.setItem('mathswag_user', JSON.stringify(userWithoutPassword));
 
-    return true;
+    return { success: true };
   };
 
   const logout = () => {

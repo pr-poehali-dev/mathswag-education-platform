@@ -22,12 +22,18 @@ const Login = () => {
     e.preventDefault();
 
     if (isLogin) {
-      const success = await login(formData.email, formData.password);
-      if (success) {
+      const result = await login(formData.email, formData.password);
+      if (result.success) {
         toast.success('Вход выполнен успешно!');
         navigate('/dashboard');
       } else {
-        toast.error('Неверный email или пароль');
+        if (result.error === 'account_not_found') {
+          toast.error('Аккаунта с этой электронной почтой не существует');
+        } else if (result.error === 'wrong_password') {
+          toast.error('Неверный пароль');
+        } else {
+          toast.error('Ошибка входа');
+        }
       }
     } else {
       if (!formData.name || !formData.email || !formData.password) {
@@ -35,12 +41,16 @@ const Login = () => {
         return;
       }
 
-      const success = await register(formData.name, formData.email, formData.password);
-      if (success) {
+      const result = await register(formData.name, formData.email, formData.password);
+      if (result.success) {
         toast.success('Регистрация успешна! Добро пожаловать!');
         navigate('/dashboard');
       } else {
-        toast.error('Пользователь с таким email уже существует');
+        if (result.error === 'email_exists') {
+          toast.error('Пользователь с таким email уже существует');
+        } else {
+          toast.error('Ошибка регистрации');
+        }
       }
     }
   };
@@ -55,7 +65,7 @@ const Login = () => {
             </div>
           </div>
           <CardTitle className="text-3xl font-bold">
-            {isLogin ? 'Вход в MathSwag' : 'Регистрация'}
+            {isLogin ? 'Вход' : 'Регистрация'}
           </CardTitle>
           <CardDescription>
             {isLogin 
