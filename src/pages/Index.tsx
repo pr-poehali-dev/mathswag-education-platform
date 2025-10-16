@@ -270,11 +270,6 @@ const Index = () => {
                 key={index}
                 className="relative hover:shadow-2xl transition-all border-2 border-gray-200"
               >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#FF6DC4] to-[#FFA07A] text-white px-6 py-1 rounded-full text-sm font-semibold">
-                    Популярный
-                  </div>
-                )}
                 <CardHeader>
                   <CardTitle className="text-2xl">{plan.name}</CardTitle>
                   <CardDescription className="text-gray-600">{plan.lessons}</CardDescription>
@@ -294,11 +289,7 @@ const Index = () => {
                   </ul>
                   <Button 
                     onClick={handleBuyLesson}
-                    className={`w-full ${
-                      plan.popular 
-                        ? 'bg-gradient-to-r from-[#FF6DC4] to-[#FFA07A] hover:opacity-90' 
-                        : 'bg-gradient-to-r from-[#45B7D1] to-[#4EDDC4] hover:opacity-90'
-                    } text-white`}
+                    className="w-full bg-gradient-to-r from-[#45B7D1] to-[#4EDDC4] hover:opacity-90 text-white"
                     size="lg"
                   >
                     {isAuthenticated ? 'Купить уроки' : 'Войти для покупки'}
